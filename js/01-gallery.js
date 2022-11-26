@@ -2,6 +2,8 @@ import { galleryItems } from "./gallery-items.js";
 
 const galleryEl = document.querySelector("div.gallery");
 
+console.log(galleryEl);
+
 const arrayEl = galleryItems
   .map(
     (item) => `<div class="gallery__item">
@@ -23,24 +25,27 @@ galleryEl.addEventListener("click", onLargeImage);
 
 function onLargeImage(e) {
   e.preventDefault();
-  if (e.target === e.currentTarget) return;
+  if (!e.target.classList.contains("gallery__image")) return;
 
-  const modalGallery = basicLightbox.create(
+  const instance = basicLightbox.create(
     `
     <div class="modal">
-        <img src = '${e.target.dataset.source}' width="800" height="600"/> 
+        <img src = '${e.target.dataset.source}' width="800" height="600"/>
     </div>
 `,
     {
-      onShow: () => {
-        window.addEventListener("keyup", onCloseWindowByEsc);
+      onShow: (instance) => {
+        document.addEventListener("keydown", onCloseWindowByEsc);
+      },
+      onClose: (instance) => {
+        document.removeEventListener("keydown", onCloseWindowByEsc);
       },
     }
   );
-  modalGallery.show();
+  instance.show();
 
   function onCloseWindowByEsc(e) {
     if (e.code === "Escape");
-    modalGallery.close();
+    instance.close();
   }
 }
